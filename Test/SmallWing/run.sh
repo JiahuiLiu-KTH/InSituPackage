@@ -1,6 +1,6 @@
 
 
-export PARAVIEW=/home/marco/InSituPackage/local
+export PARAVIEW=$HOME/InSituPackage/local
 export PATH=$PARAVIEW/bin:$PATH
 export LD_LIBRARY_PATH=$PARAVIEW/lib:$LD_LIBRARY_PATH
 
@@ -17,4 +17,4 @@ echo 'small_wing' >> SESSION.NAME
 pwd >> SESSION.NAME
 
 
-mpirun -n 16 ./nek5000
+# mpirun -n 16 ./nek5000

@@ -1,0 +1,8 @@
+RawFile: kde.raw
+Resolution: 6 401 501
+Format: FLOAT32
+DataRange: 0.0 108.79472969511724
+ValueRange: 0.0 108.79472969511724
+BasisVector1: 0.05 0.0 0.0
+BasisVector2: 0.0 4 0.0
+BasisVector3: 0.0 0.0 5
