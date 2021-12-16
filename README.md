@@ -6,7 +6,7 @@ We are not using this repository for active development, but it rather represent
 
 The present document is organized in 4 sections: 1) Funding and contributors 2) Description of the in-situ adaptor and the interface *Nek5000/Catalyst*, 3) Building instructions and 4) Description of the test case.
 
-**Note:** although this guide is written to allow building and running the test case without previous experience with *Nek5000* and *ParaView/Catalyst*, it is not a self-contatined documentation. In particular, section 4) is written assuming that readers have familiarity with *Nek5000*. 
+**Note:** although this guide is written to allow building and running the test case without previous experience with *Nek5000* and *ParaView/Catalyst*, it is not a self-contatined documentation. In particular, section 4) is written assuming that readers have familiarity with *Nek5000*.
 
 ## 1. Funding and contributors
 
@@ -31,7 +31,7 @@ The most relevant parts of the code that we developped is contained in the follo
 
 ### *Nek5000/core/3rd_party/nek_in_situ.f*
 
-This file is part of Nek5000. It is modified to include the three subroutines *catalyst_init*, *catalyst_process*, and *catalyst_end* in the corresponding default subroutines for in-situ operations in Nek5000. Note that this is also the file that includes the subroutines for in-situ operation with the visualization software visit. 
+This file is part of Nek5000. It is modified to include the three subroutines *catalyst_init*, *catalyst_process*, and *catalyst_end* in the corresponding default subroutines for in-situ operations in Nek5000. Note that this is also the file that includes the subroutines for in-situ operation with the visualization software visit.
 
 ### *Nek5000/core/3rd_party/catalyst.f*
 
@@ -48,15 +48,21 @@ This file is part of Nek5000. It is modified to add the subroutine *catalyst_usr
 ## 3. Building instructions
 These instructions were used to compile Nek5000+ParaView/Catalyst on Ubuntu 18.04 (09/12/2019), with the aim of reproducing a similar build for the HPC system *Beskow* at PDC, Stockholm (Cray XC40).
 
+If you try to run it on *Tegner*, **DO NOT** install it on *afs* file system, you should run it on *Lustre* (i.e. */cfs/klemming/scratch/$USER/*)
+
 ### 3.1 Prerequisites
 
 Install packages:
 
 *sudo apt install build-essential cmake-curses-gui llvm mpich libboost-all-dev*
 
-and Python 3.6:
+and Python 3.6 develop version:
 
- *sudo apt-get install python3.6*
+ *sudo apt-get install python3.6-dev*
+
+and open-mpi 3.0.0:
+
+ *Download it from https://www.open-mpi.org/software/ompi/v3.0/  and compile it*
 
 The source codes of mesa-18.3.3 and ParaView-v5.6.3 are located in *~/InSituPackage*. Binaries file will be placed in *~/InSituPackage/local*.
 
@@ -183,17 +189,17 @@ CATALYST_INCS=`paraview-config --include vtkPVPythonCatalyst`
 
 ### Numerical simulation
 
-This test case describes the flow around a NACA4412 at a moderate Reynolds number, and it is intermediate between a tutorial and an example of a realistic CFD simulation. 
+This test case describes the flow around a NACA4412 at a moderate Reynolds number, and it is intermediate between a tutorial and an example of a realistic CFD simulation.
 
 The setup shares some similarities with the high-fidelity numerical simulations carried out by Vinuesa *et al.* (https://doi.org/10.1016/j.ijheatfluidflow.2018.04.017), such as the boundary conditions, LES filter, tripping and checkpoint implementation. However, the default resolution is much coarser than what needed to provide an accurate description of the flow. In particular, the grid contains 10,500 spectral elements, and we employ polynomials of the 3rd order in the spatial discretization, resulting in 672,000 grid points (the smallest simulation with proper resultion in the study mentioned above employed 28,000 elements and polynomials of 11th order, resulting in 48,384,000 grid points).
 
 The very coarse resolution allows running on personal computers with standard computational resources but also makes the results of the simulation unreliable.
 
-**Note:** the number of grid points of this test case can be easily increased by increasing the polynomial order. For instance, using the 15th polynomial order will result in 43,008,000 grid points, which is a reasonable proxy for a small high-fidelity CFD simulation. With this modification, the test case provided here can be used to carry out a scalability test on any HPC facility, assuming the building process is successful. 
+**Note:** the number of grid points of this test case can be easily increased by increasing the polynomial order. For instance, using the 15th polynomial order will result in 43,008,000 grid points, which is a reasonable proxy for a small high-fidelity CFD simulation. With this modification, the test case provided here can be used to carry out a scalability test on any HPC facility, assuming the building process is successful.
 
 ### Pipeline
 
-The instructions for in-situ analysis are distributed between the main pipeline, *pipe.py*, and a set of python scripts describing every operation. 
+The instructions for in-situ analysis are distributed between the main pipeline, *pipe.py*, and a set of python scripts describing every operation.
 
 In the present version, the operations performed include 1) creation of "slices", *i.e.* lateral view of the domain illustrating the velocity distrbution, 2) visualization of iso surfaces of a certain velocity value, and  3) writing to disk full 3D fields in VTK format.
 
@@ -226,4 +232,10 @@ Time: [4080, 4280],	Data: All, Mode: Save.
 
 ```bash
 source run.sh
+```
+
+if you encounter NCURSES in conda then:
+
+```bash
+conda uninstall --force ncurses
 ```
