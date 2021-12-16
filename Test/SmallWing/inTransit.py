@@ -25,6 +25,42 @@ xNum = (xMax - xMin) * NumScale + 1
 yNum = (yMax - yMin) * NumScale + 1
 zNum = (zMax - zMin) * NumScale + 1
 
+''' Functions '''
+
+# Save to inviwo file
+def saveToInv(fileName, kdeVal):
+    dat = """RawFile: {file}
+    Resolution: {dimX} {dimY} {dimZ}
+    Format: {format}
+    DataRange: {dataMin} {dataMax}
+    ValueRange: {dataMin} {dataMax}
+    BasisVector1: {V1} 0.0 0.0
+    BasisVector2: 0.0 {V2} 0.0
+    BasisVector3: 0.0 0.0 {V3}
+    """
+
+    with open(fileName + ".dat", 'w') as f:
+        f.write(dat.format(
+            file = fileName.split("/")[-1]+".raw", 
+            format = "FLOAT32", 
+            dimX = kdeVal.shape[0],
+            dimY = kdeVal.shape[1],
+            dimZ = kdeVal.shape[2],
+            dataMin = kdeVal.min(),
+            dataMax = kdeVal.max(),
+            V1 = xMax - xMin,
+            V2 = yMax - yMin,
+            V3 = zMax - zMin
+        ))
+
+    arr = np.float32(kdeVal.T)
+    arr.tofile(fileName + ".raw")
+
+# Save to csv file
+def saveToCsv(fileName, X, Y, Z, kdeVal):
+    output = np.vstack([X.T.ravel(), Y.T.ravel(), Z.T.ravel(), kdeVal.T.ravel()])
+    np.savetxt(fileName + ".csv", output.T, delimiter = ",", header = "x,y,z,density", comments='')
+
 # Generate uniform grid
 X, Y, Z = np.mgrid[xMin:xMax:xNum*1j, yMin:yMax:yNum*1j, zMin:zMax:zNum*1j]
 grid = np.vstack([X.ravel(), Y.ravel(), Z.ravel()])    
@@ -160,3 +196,10 @@ for rounds in range(NSTEP):
     kdeVal = np.reshape(kernel(grid), X.shape)
 
     print(f"[INTS]: **************** Round[{rounds}] Calculate KDE Done!")
+
+    # Save to file
+    print(kdeVal.shape)
+    fileName = "kdeData/kde_" + str(rounds)
+    # saveToCsv(fileName, X, Y, Z, kdeVal)
+    saveToInv(fileName, kdeVal)
+    
