@@ -18,3 +18,4 @@ pwd >> SESSION.NAME
 
 
 # mpirun -n 16 ./nek5000
+# mpirun -np 4 ./nek5000 : -np 1 python ./inTransit.py
